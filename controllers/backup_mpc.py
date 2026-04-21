@@ -73,7 +73,8 @@ class BackupMPC:
         nlp = {"x": ca.vertcat(*w), "f": J, "g": ca.vertcat(*g), "p": ca.vertcat(x0_p, gxy_p)}
         solver = ca.nlpsol("solver", "ipopt", nlp, {"ipopt.print_level": 0, "print_time": 0})
 
-        w0 = np.zeros(sum(np.size(v) for v in w))
+        nw = nx * (self.N + 1) + nu * self.N
+        w0 = np.zeros(nw)
         p = np.array([x0[0], x0[1], x0[2], goal_xy[0], goal_xy[1]], dtype=float)
 
         sol = solver(x0=w0, lbx=lbw, ubx=ubw, lbg=lbg, ubg=ubg, p=p)
