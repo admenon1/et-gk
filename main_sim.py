@@ -12,7 +12,7 @@ from utils.plotting import draw_scene, draw_robot
 
 def main():
     dt = 0.05
-    T = 50.0
+    T = 25.0
     steps = int(T / dt)
 
     x = np.array([0.0, 0.0, 0.0])
@@ -31,8 +31,8 @@ def main():
     nominal = PurePursuitGoal(k_v=0.9, k_w=2.0, v_max=1.0, goal_tol=0.3)
     backup = BackupMPC(
         dt=dt,
-        horizon=20,
-        v_bounds=(0.2, 0.9),
+        horizon=50,
+        v_bounds=(0.0, 0.9),
         w_bounds=(-2.0, 2.0),
         obstacles=obstacles,
         robot_radius=env.robot_radius,
