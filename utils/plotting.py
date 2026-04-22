@@ -12,8 +12,8 @@ def draw_scene(ax, obstacles, goal_xy):
         ax.add_patch(c)
 
     ax.plot(goal_xy[0], goal_xy[1], "g*", markersize=14, label="Goal")
-    ax.set_xlim(-1, 12)
-    ax.set_ylim(-1, 12)
+    ax.set_xlim(-1, 15)
+    ax.set_ylim(-1, 15)
 
 
 def draw_robot(ax, x, mode="nominal-dormant"):
