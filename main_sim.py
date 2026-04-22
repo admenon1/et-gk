@@ -12,7 +12,7 @@ from utils.plotting import draw_scene, draw_robot
 
 def main():
     dt = 0.05
-    T = 25.0
+    T = 50.0
     steps = int(T / dt)
 
     x = np.array([0.0, 0.0, 0.0])
@@ -26,13 +26,13 @@ def main():
         {"cx": 4.0, "cy": 8.0, "r": 1.0},
     ]
 
-    model = Unicycle(dt=dt, v_bounds=(0.2, 1.2), w_bounds=(-2.0, 2.0))
+    model = Unicycle(dt=dt, v_bounds=(0.0, 1.2), w_bounds=(-2.0, 2.0))
     env = CircleObstacleField(obstacles=obstacles, robot_radius=0.25)
     nominal = PurePursuitGoal(k_v=0.9, k_w=2.0, v_max=1.0, goal_tol=0.3)
     backup = BackupMPC(
         dt=dt,
-        horizon=20,
-        v_bounds=(0.2, 0.9),
+        horizon=60,
+        v_bounds=(0.0, 0.9),
         w_bounds=(-2.0, 2.0),
         obstacles=obstacles,
         robot_radius=env.robot_radius,
