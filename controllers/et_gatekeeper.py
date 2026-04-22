@@ -25,6 +25,10 @@ class ETGatekeeper:
         self.dt = dt
 
         self.backup_horizon = backup_horizon
+        self._backup_horizon_from_mpc = self.backup.N * self.dt
+        if abs(self.backup_horizon - self._backup_horizon_from_mpc) > 1e-9:
+            self.backup_horizon = self._backup_horizon_from_mpc
+
         self.nominal_horizon = nominal_horizon
         self.horizon_discount = horizon_discount
 
@@ -46,17 +50,18 @@ class ETGatekeeper:
             if self.env.in_collision(x, margin=0.0):
                 return False
 
-        # Backup part
+        # Backup part: one MPC solve at switching state, open-loop rollout (no re-solve per dt)
+        x_sw = np.array(x, dtype=float)
+        try:
+            U_seq = self.backup.solve_full_sequence(x_sw, goal_xy)
+        except Exception:
+            return False
+
         Tb_steps = int(np.ceil(self.backup_horizon / self.dt))
-        for _ in range(Tb_steps):
-            u = self.backup.solve(
-                x0=x,
-                goal_xy=goal_xy,
-                obstacles=self.env.obstacles,
-                robot_radius=self.env.robot_radius,
-                safe_margin=self.cbf_margin
-            )
-            x = self.model.step(x, u)
+        N_mpc = self.backup.N
+        for k in range(Tb_steps):
+            uk = U_seq[min(k, N_mpc - 1)]
+            x = self.model.step(x, uk)
             if self.env.in_collision(x, margin=0.0):
                 return False
 
@@ -108,12 +113,15 @@ class ETGatekeeper:
             info = {"mode": "nominal-awake", "gamma_min": gamma_min, "h_min": h_min, "Ts_star": Ts_star}
             return u_nom, info
 
-        u_b = self.backup.solve(
-            x0=x,
-            goal_xy=goal_xy,
-            obstacles=self.env.obstacles,
-            robot_radius=self.env.robot_radius,
-            safe_margin=self.cbf_margin
-        )
+        # u_b = self.backup.solve(
+        #     x0=x,
+        #     goal_xy=goal_xy,
+        #     obstacles=self.env.obstacles,
+        #     robot_radius=self.env.robot_radius,
+        #     safe_margin=self.cbf_margin
+        # )
+
+        u_b = self.backup.solve(x0=x, goal_xy=goal_xy)
+
         info = {"mode": "backup", "gamma_min": gamma_min, "h_min": h_min, "Ts_star": 0}
         return u_b, info
