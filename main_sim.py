@@ -29,11 +29,14 @@ def main():
     goal = np.array([14.0, 14.0])
 
     obstacles = [
-        {"cx": 4.2, "cy": 3.1, "r": 0.65},
-        {"cx": 7.8, "cy": 6.4, "r": 0.72},
-        {"cx": 10.6, "cy": 8.9, "r": 0.58},
-        {"cx": 13.4, "cy": 11.2, "r": 0.69},
-        {"cx": 16.1, "cy": 14.8, "r": 0.63},
+        {"cx": 4.2, "cy": 3.0, "r": 0.5},
+        {"cx": 6.8, "cy": 8.0, "r": 0.8},
+        {"cx": 12.6, "cy": 9.0, "r": 0.7},
+        {"cx": 11.1, "cy": 11.8, "r": 1},
+        {"cx": 7.2, "cy": 2.0, "r": 1},
+        {"cx": 3.8, "cy": 11.0, "r": 2.0},
+        {"cx": 13.1, "cy": 2.8, "r": 1.5},
+        {"cx": 1.5, "cy": 6.0, "r": 0.9},
     ]
 
     model = Unicycle(dt=dt, v_bounds=(0.0, 1.2), w_bounds=(-2.0, 2.0))
@@ -41,8 +44,8 @@ def main():
     nominal = PurePursuitGoal(k_v=0.9, k_w=2.0, v_max=1.0, goal_tol=0.3)
     backup = BackupMPC(
         dt=dt,
-        horizon=40,
-        v_bounds=(0.0, 0.9),
+        horizon=35,
+        v_bounds=(0.05, 0.9),
         w_bounds=(-2.0, 2.0),
         obstacles=obstacles,
         robot_radius=env.robot_radius,
@@ -74,8 +77,8 @@ def main():
             backup_horizon=1.5,
             nominal_horizon=1.5,
             horizon_discount=0.1,
-            k_alpha=1.0,
-            cbf_margin=0.15,
+            k_alpha=2.5,
+            cbf_margin=0.05,
             gamma_off=0.2,
             min_awake_time=0.25,
         )
